@@ -43,7 +43,6 @@ class Node(object):
             if binary_na1[i] != binary_na2[i]:
                 netmask = i
                 break
-
         return ip_network('{}/{}'.format(na1, netmask), strict=False)
     def aggr(self, byte_thresh):
         nodes = [self.left, self.right]
