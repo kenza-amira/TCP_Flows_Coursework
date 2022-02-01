@@ -46,23 +46,20 @@ class Node(object):
 
         return ip_network('{}/{}'.format(na1, netmask), strict=False)
     def aggr(self, byte_thresh):
-        if self.left is not None:
-            if self.left.left is not None or self.left.right is not None:
-                self.left.aggr(byte_thresh)
-            else:
-                if self.left.bytes < byte_thresh:
-                    self.bytes += self.left.bytes
-                    self.ip = self.supernet(self.ip,self.left.ip)
-                    self.left = None
-
-        if self.right is not None:
-            if self.right.left is not None or self.right.right is not None:
-                self.right.aggr(byte_thresh)
-            else:
-                if self.right.bytes < byte_thresh:
-                    self.bytes += self.right.bytes
-                    self.ip = self.supernet(self.ip, self.right.ip)
-                    self.right = None
+        nodes = [self.left, self.right]
+        for node in nodes:
+            if node is not None:
+                if node.left is not None or node.right is not None:
+                    node.aggr(byte_thresh)
+                    if node.bytes < byte_thresh:
+                        self.bytes += node.bytes
+                        self.ip = self.supernet(self.ip, node.ip)
+                        node.bytes = 0
+                else:
+                    if node.bytes < byte_thresh:
+                        self.bytes += node.bytes
+                        self.ip = self.supernet(self.ip,node.ip)
+                        node = None
             
 class Data(object):
     def __init__(self, data):
